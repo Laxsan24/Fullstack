@@ -1,4 +1,5 @@
 <script setup>
+//This is only for lessons.vue only
 import {ref} from 'vue'
 const subjects = ref([
     //The lessons from the code below has to be in the file Lessons.vue

@@ -8,9 +8,24 @@ createApp(App).mount('#app')
     el: '#app', // <=== Don't forget this comma
     data: { // the 'data' option
 // the key 'sitename' matches the value of 'v-text' earlier
-    sitename: 'Vue.js Pet Depot'
-    }
+    sitename: 'Vue.js Book',
+        product:{
+            id:10101,
+            title:"Book",
+            description: "Science",
+            price: 200,
+            image: "images/Science image.jpg"
+
+        },
+        cart: [],
+        methods:{
+            addToCart: function(){
+                this.cart.push(this.product.id);
+            }
+        }
+}
     });
+    console.log("Hello");
 
 //Use
 
