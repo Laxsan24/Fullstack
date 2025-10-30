@@ -14,7 +14,8 @@ createApp(App).mount('#app')
             title:"Book",
             description: "Science",
             price: 200,
-            image: "images/Science image.jpg"
+            image: "images/Science image.jpg",
+            rating: 3
 
         },
         cart: [],
