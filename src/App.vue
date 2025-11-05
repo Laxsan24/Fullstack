@@ -18,6 +18,26 @@ const subjects = ref([
 ])
 const cart = ref([])
 const showProduct = ref(true);
+const placeOrder = () => {
+    alert(`Thank you for your order, ${order.value.firstName}!`);
+    // Reset the order form
+    order.value = {
+        firstName: '',
+        lastName: '',
+        phone: '',
+        address: '',
+        city: '',
+        state: '',
+        zip: '',
+        gift: false,
+        method: 'Home'
+    };
+    // Clear the cart
+    cart.value = [];
+    // Return to product view
+
+    showProduct.value = true;
+};
 const order = ref({
     firstName: '',
     lastName: '',
@@ -25,7 +45,9 @@ const order = ref({
     address: '',
     city: '',
     state: '',
-    zip: ''
+    zip: '',
+    gift: false,
+    method: 'Home'
 });
 
 // function sortSubject() {
@@ -230,8 +252,14 @@ function showCheckout() {
                     <option>NE</option>
                     </select><br></p>
             <p><strong>Zip Code:</strong><input v-model ="order.zip" placeholder="Zip Code"><br></p>
-            <p><button>Place Order</button></p>
-            
+            <p><input type="checkbox" id="gift" value="true" v-model="order.gift">
+            <label for="gift">Ship As Gift?</label></p>
+            <p><input type="radio" id="home" value="Home" v-model="order.method">
+            <label for="home">Home</label>
+            <input type="radio" id="business" value="Business" v-model="order.method">
+            <label for="business">Business</label></p>
+            <p><button @click="placeOrder">Place Order</button></p>
+            <!--v-on-click or @click-->
         </div>
         <!-- <router-view></router-view> -->
     </div>
@@ -327,4 +355,5 @@ the shopping basket and when the button is clicked it needs to be linked. -->
 </template>
 <!-- Used for html-->
 
-<style scoped></style> <!-- Used for css need to do this-->
+<style scoped>
+</style> <!-- Used for css need to do this-->
