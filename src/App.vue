@@ -20,7 +20,7 @@ const cart = ref([])
 const showProduct = ref(true);
 const placeOrder = () => {
     alert(`Thank you for your order, ${order.value.firstName}!`);
-    // Reset the order form
+
     order.value = {
         firstName: '',
         lastName: '',
@@ -32,12 +32,11 @@ const placeOrder = () => {
         gift: false,
         method: 'Home'
     };
-    // Clear the cart
     cart.value = [];
-    // Return to product view
 
     showProduct.value = true;
 };
+
 const order = ref({
     firstName: '',
     lastName: '',
@@ -47,8 +46,24 @@ const order = ref({
     state: '',
     zip: '',
     gift: false,
-    method: 'Home'
+    method: 'Home',
+    // sendGift: 'Send a gift',
+    // dontSendGift: "Don't send a gift",
 });
+const stateOptions = ref({
+    E: 'East',
+    EC: 'East Central',
+    N: 'North',
+    NC: 'North Central',
+    NE: 'North East',
+    NW: 'North West',
+    S: 'South',
+    SC: 'South Central',
+    SE: 'South East',
+    SW: 'South West',
+    W: 'West',
+    WC: 'West Central',
+})
 
 // function sortSubject() {
 
@@ -69,6 +84,11 @@ const order = ref({
 
 // }
 
+function isOrderValid() {
+    return order.value.firstName &&
+        order.value.lastName &&
+        order.value.phone
+}
 
 
 // import {sub} from 'vue'
@@ -94,31 +114,13 @@ function addToCart(subject) {
         alert("Out of stock!");
     }
 
-    // this.cart.push(this.subjects.id);
-    // this.cart.push(this.subjects.subject);
 
-    // return this.subjects.availableInventory > this.cartItemCount;
-    // addSubject("Item added to basket!") 
-    //Fix this line above
 }
 
 function itemsLeft(subject) {
-    return subject.availableInventory;  //Fix this, this is showing NaN
+    return subject.availableInventory;
 }
-// function cartCount(){ //This is Cart Item count 
-//     return this.cart.length ||"";
-// }
 
-//     computed: {
-//         itemsLeft();{
-//             return this.subject.spaces - this.cartItemCount
-//         }
-//     }
-//     methods: {
-//      canAddToCart(subjects) ;{
-//          return subjects.spaces > this.cartItemCount(subjects.id);
-//     }
-// }
 
 function showCheckout() {
     showProduct.value = showProduct.value ? false : true;
@@ -129,13 +131,13 @@ function showCheckout() {
 
 
 <template>
-    
+
     <!-- <div id ="app"> -->
     <!-- </div> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fontawesome/5.15.1/css/all.min.css">
-    <!-- <i><span class ="fa-solid fa-cart-shopping"></span></i> -->
-    <!--Need to add an icon on line-->
-    <button v-on:click="showCheckout">
+
+
+    <button v-on:click="showCheckout" :disabled="!cartItemCount(subjects)">
         {{ cartItemCount(subjects) }}
         <span class="fas fa-cart-plus"></span>
         Checkout
@@ -144,78 +146,66 @@ function showCheckout() {
         <!--Code for product page-->
         <h1>Product Page</h1>
         <h1>Hi and Welcome to my book shop!!</h1>
-        <!-- <p>You have {{ cartItemCount(subjects) }} items in your cart.</p> -->
-         <div>
-   <div>
-        <!--Need to sort the lessons and need to sort the ascending and descending order and need buttons so it can be like that-->
-        <h4>Sort by</h4>
-        <!-- <li>Subject</li>  -->
-        <button @click="sortSubject">Subject</button><br>
-        <!-- <li>Location</li>  -->
-        <button @click="sortLocation">Location</button><br>
-        <!-- <li>Price</li>  -->
-        <button @click="sortPrice">Price</button><br>
-        <!-- <li>Spaces available</li>  -->
-        <button @click="sortSpacesAvailable">Spaces Available</button>
-        <br>
-        <h4>Order</h4>
-        <!-- <li>Ascending</li> -->
-        <button @click="ascendingOrder">Ascending</button><br>
-        <!-- <li>Descending</li> -->
-        <button @click="descendingOrder">Descending</button><br>
-        ---------------------------------
-    </div>
-        <h3>Books available:</h3>
-        <ol>
-            <!--Math book, Science book, English book, German book-->
-            <li v-for="subject in subjects" :key="subject.id">
-                <p>Subject: {{ subject.subject }}</p>
-                <p>Location: {{ subject.location }}</p>
-                <p>Price: {{ subject.Price }}</p>
-                <p>Items left: {{ subject.spaces }}</p>
-                <p>Spaces left: {{ itemsLeft(subject) }}</p>
-                <!--Need sort out line 146(spaces are not showing)-->
-                <p>Image: {{ subject.image }}</p>
-                <!--Line 143 need to not have '.jpg'-->
-                <img :src="'images/' + subject.image" :alt="subject.subject + ' book image'" width="100" height="100">
+        <div>
+            <div>
+                <!--Need to sort the lessons and need to sort the ascending and descending order and need buttons so it can be like that-->
+                <h4>Sort by</h4>
+                <!-- <li>Subject</li>  -->
+                <button @click="sortSubject">Subject</button><br>
+                <!-- <li>Location</li>  -->
+                <button @click="sortLocation">Location</button><br>
+                <!-- <li>Price</li>  -->
+                <button @click="sortPrice">Price</button><br>
+                <!-- <li>Spaces available</li>  -->
+                <button @click="sortSpacesAvailable">Spaces Available</button>
                 <br>
-                <!--Need to delete this line above ('.png' and '.jpeg')-->
-                <p>Rating: {{ subject.rating }}</p>
-                <div>
-                    <span v-for='n in subject.rating'>★</span>
-                    <span v-for='n in 5 - subject.rating'>☆</span>
-                    <p>Buy now!</p>
-                </div>
-                <!-- <input type="button" value = "Add to cart" v-on:click="'addItem'">Adds the item to the cart<br> Adds this item to the cart -->
-                <!--It's either subjects or subject-->
-                <!-- <button v-on:click="addSubject">Add to cart123</button><br> Need to click add button which goes to the cart -->
-                <!--I might not need line 166, I might need line 181-->
-                <div>
-                    <!--Need to use v-on-click not @-->
-                    <!--Do canAddToCart function    (line below)-->
+                <h4>Order</h4>
+                <!-- <li>Ascending</li> -->
+                <button @click="ascendingOrder">Ascending</button><br>
+                <!-- <li>Descending</li> -->
+                <button @click="descendingOrder">Descending</button><br>
+                --------------------------------------------------------------------------------------------------------------------------------
+            </div>
+            <h3>Books available:</h3>
+            <ol>
 
-                    <!-- <button @click='addToCart(subject)' v-if="canAddToCart"> Add to cart</button>  -->
-                    <!-- <button disabled='disabled' v-else> Add to cart </button> -->
-                    <button v-on:click='addToCart(subject)' v-if="subject.availableInventory"> Add to cart</button>
-                    <!-- <button v-on:click ="addToCart(subject)" v-if ="canAddToCart">Add to cart</button> -->
-                    <div v-else>
-                        <button disabled='disabled'>Add to cart</button>
-                        <p>You have used all your items in the cart</p>
+                <li v-for="subject in subjects" :key="subject.id">
+                    <p>Subject: {{ subject.subject }}</p>
+                    <p>Location: {{ subject.location }}</p>
+                    <p>Price: {{ subject.Price }}</p>
+                    <p>Items left: {{ subject.spaces }}</p>
+                    <p>Spaces left: {{ itemsLeft(subject) }}</p>
+
+                    <p>Image: {{ subject.image }}</p>
+
+                    <img :src="'images/' + subject.image" :alt="subject.subject + ' book image'" width="100"
+                        height="100">
+                    <br>
+
+                    <p>Rating: {{ subject.rating }}</p>
+                    <div>
+                        <span v-for='n in subject.rating'>★</span>
+                        <span v-for='n in 5 - subject.rating'>☆</span>
+                        <p>Buy now!</p>
                     </div>
-                    <p>Only {{ itemsLeft(subject) }} left</p>
-                </div>
-                <!--Need to make the button add to the cart and take away the amount of spaces left.-->
-            </li>
-        </ol>
+                    <div>
+                        <button v-on:click='addToCart(subject)' v-if="subject.availableInventory"> Add to cart</button>
+
+                        <div v-else>
+                            <button disabled='disabled'>Add to cart</button>
+                            <p>You have used all your items in the cart</p>
+                        </div>
+                        <p>Only {{ itemsLeft(subject) }} left</p>
+                    </div>
+                    <!--Need to make the button add to the cart and take away the amount of spaces left.-->
+                </li>
+            </ol>
+        </div>
     </div>
-    </div>
+    <!-- The lessons from the code below has to be in the file Lessons.vue -->
     <div v-else>
         <!--Code for checkout page-->
         <h1>Checkout Page</h1>
-        <!-- <nav>
-            <router-link to="/shopping-cart">Go to Shopping Cart</router-link>
-            <router-link to="/lessons">Go to Lessons</router-link>
-        </nav> -->
         <div v-if="cartItemCount(subjects) == 0">
             <p>Your cart is empty.</p>
         </div>
@@ -224,136 +214,68 @@ function showCheckout() {
         </div>
         <button @click="showProduct = true">Continue Shopping</button>
         <div>
-            <h2>Order Summary:</h2>
-            <strong>Order Details:</strong><br>
-            <p><strong>First Name: </strong><input v-model ="order.firstName" placeholder="First Name"><br></p>
-                <!-- <p><strong>First Name: {{ order.firstName }}</strong><input v-model ="order.firstName" placeholder="First Name"><br></p> -->
-            <p><strong>Last Name:</strong><input v-model ="order.lastName" placeholder="Last Name"><br></p>
-            <!-- <p><strong>Last Name:{{ order.lastName }}</strong><input v-model ="order.lastName" placeholder="Last Name"><br></p> -->
-            <p><strong>Phone:</strong><input v-model ="order.phone" placeholder="Phone Number"><br></p>
-            <!-- <p><strong>Phone:{{ order.phone }}</strong><input v-model ="order.phone" placeholder="Phone Number"><br></p> -->
-            <p><strong>Address:</strong><input v-model ="order.address" placeholder="Address"><br></p>
-            <!-- <p><strong>Address:{{ order.address }}</strong><input v-model ="order.address" placeholder="Address"><br></p> -->
-            <p><strong>City:</strong><input v-model ="order.city" placeholder="City"><br></p>
-            <!-- <p><strong>City:{{ order.city }}</strong><input v-model ="order.city" placeholder="City"><br></p> -->
-            <p><strong>State:</strong> 
-                <!-- <p><strong>State:{{ order.state }}</strong>  -->
-                <select v-model="order.state">
-                    <option disabled value="">Please select one</option>
-                    <option>E</option>
-                    <option>EC</option>
-                    <option>N</option>
-                    <option>NW</option>
-                    <option>SE</option>
-                    <option>SE</option>
-                    <option>SW</option>
-                    <option>W</option>
-                    <option>WC</option>
-                    <option>NE</option>
-                    </select><br></p>
-            <p><strong>Zip Code:</strong><input v-model ="order.zip" placeholder="Zip Code"><br></p>
-            <p><input type="checkbox" id="gift" value="true" v-model="order.gift">
-            <label for="gift">Ship As Gift?</label></p>
-            <p><input type="radio" id="home" value="Home" v-model="order.method">
-            <label for="home">Home</label>
-            <input type="radio" id="business" value="Business" v-model="order.method">
-            <label for="business">Business</label></p>
-            <p><button @click="placeOrder">Place Order</button></p>
+            <h2>Order Checkout:</h2>
+            <h3>Please enter your details below:</h3>
+            <p><strong>First Name: </strong><input v-model.trim="order.firstName" placeholder="First Name"><br></p>
+
+            <p><strong>Last Name:</strong><input v-model.trim="order.lastName" placeholder="Last Name"><br></p>
+
+            <p><strong>Phone:</strong><input v-model.number="order.phone" type="number" placeholder="Phone Number"><br>
+            </p>
+
+            <p><strong>Address:</strong><input v-model.trim="order.address" placeholder="Address"><br></p>
+
+            <p><strong>City:</strong><input v-model.trim="order.city" placeholder="City"><br></p>
+
+            <p><strong>State:</strong>
+                <!-- 'class ="form-control"' is used for CSS styling -->
+                <select v-model.trim="order.state" class="form-control">
+                    <option disabled value="">Select State</option>
+                    <option v-for="(state, key) in stateOptions" v-bind:value="state">{{ state }} ({{ key }})</option>
+                </select><br>
+            </p>
+            <p><strong>Zip Code:</strong><input v-model.number="order.zip" type="number" placeholder="Zip Code"><br></p>
+            <p><input type="checkbox" id="gift" value="true" v-model.trim="order.gift">
+                <!-- v-bind:true-value = "order.sendGift"
+            v-bind:false-value = "order.dontSendGift"> -->
+                <label for="gift">Ship As Gift?</label>
+            </p>
+            <p><input type="radio" id="home" value="Home" v-model.trim="order.method">
+                <label for="home">Home</label>
+                <input type="radio" id="business" value="Business" v-model.trim="order.method">
+                <label for="business">Business</label>
+            </p>
             <!--v-on-click or @click-->
+
+            <div>
+                <h2>Order information</h2>
+                <p><strong>First Name: </strong>{{ order.firstName }}</p>
+
+                <p><strong>Last Name:</strong>{{ order.lastName }}</p>
+
+                <p><strong>Phone:</strong>{{ order.phone }}</p>
+
+                <p><strong>Address:</strong>{{ order.address }}</p>
+
+                <p><strong>City:</strong>{{ order.city }}</p>
+
+                <p><strong>State:</strong>{{ order.state }}</p>
+
+                <p><strong>Zip Code:</strong>{{ order.zip }}</p>
+                <p><strong>Gift:</strong>{{ order.gift ? 'Yes' : 'No' }}</p>
+                <p><strong>Shipping Method:</strong>{{ order.method }}</p>
+                <!--v-on-click or @click-->
+
+                <p><button @click="placeOrder" :disabled="!isOrderValid()">Confirm Order</button></p>
+
+            </div>
         </div>
-        <!-- <router-view></router-view> -->
     </div>
-    <!-- <p id = "ordervalue">Hi and welcome to my book shop!!!</p>
-<div id="app"></div>
-<h7 v-for="subject" in "subjects"">Subject: Math</h7><br>
-To structure this do interpalation. Shouldn't do it like this.
-<img src="/images/Math image.jpg" alt="Math book image"><br>
-<button>
-<h4>Remove</h4>
-</button> -->
-    <!-- <h1>Hi and Welcome to my book shop!!</h1> -->
 
- 
-    <!-- <div>
-
-        <h3>Books available:</h3>
-        <ol> -->
-            <!--Math book, Science book, English book, German book-->
-            <!-- <li v-for="subject in subjects" :key="subject.id">
-                <p>Subject: {{ subject.subject }}</p>
-                <p>Location: {{ subject.location }}</p>
-                <p>Price: {{ subject.Price }}</p>
-                <p>Items left: {{ subject.spaces }}</p>
-                <p>Spaces left: {{ itemsLeft(subject) }}</p> -->
-                <!--Need sort out line 146(spaces are not showing)-->
-                <!-- <p>Image: {{ subject.image }}</p> -->
-                <!--Line 143 need to not have '.jpg'-->
-                <!-- <img :src="'images/' + subject.image" :alt="subject.subject + ' book image'" width="100" height="100">
-                <br> -->
-                <!--Need to delete this line above ('.png' and '.jpeg')-->
-                <!-- <p>Rating: {{ subject.rating }}</p>
-                <div>
-                    <span v-for='n in subject.rating'>★</span>
-                    <span v-for='n in 5 - subject.rating'>☆</span>
-                    <p>Buy now!</p>
-                </div> -->
-                <!-- <input type="button" value = "Add to cart" v-on:click="'addItem'">Adds the item to the cart<br> Adds this item to the cart -->
-                <!--It's either subjects or subject-->
-                <!-- <button v-on:click="addSubject">Add to cart123</button><br> Need to click add button which goes to the cart -->
-                <!--I might not need line 166, I might need line 181-->
-                <!-- <div> -->
-                    <!--Need to use v-on-click not @-->
-                    <!--Do canAddToCart function    (line below)-->
-
-                    <!-- <button @click='addToCart(subject)' v-if="canAddToCart"> Add to cart</button>  -->
-                    <!-- <button disabled='disabled' v-else> Add to cart </button> -->
-
-                    <!-- <button v-on:click='addToCart(subject)' v-if="canAddToCart"> Add to cart</button> -->
-                    <!-- <button v-on:click ="addToCart(subject)" v-if ="canAddToCart">Add to cart</button> -->
-                    <!-- <button disabled='disabled' v-else>Add to cart</button> -->
-                    <!-- <div v-else>
-                        <button disabled='disabled'>Add to cart</button>
-                        <p>You have used all your items in the cart</p>
-                    </div>-->
-                    <!-- <p>Only {{ itemsLeft(subject) }} left</p>
-                </div> -->
-                <!--Need to make the button add to the cart and take away the amount of spaces left.-->
-            <!-- </li>
-        </ol>
-    </div> -->
     <div>
 
     </div>
-    <!--Use 'v-if', 'v-else-if' and 'v-else' when the spaces are decreasing and when it's out of stock
-it needs to say its out of stock
-and 'v-onclick' when clicking the button it needs to show on the shopping basket. So
-the shopping basket and when the button is clicked it needs to be linked. -->
-    <!-- <div> -->
-        <!-- <button @click ="addSubject"> Add to cart</button> -->
-
-        <!-- <button v-on:click='addToCart'> Add to cart</button> -->
-
-        <!-- v-if ='addToCart'. This code was in line 177 "'addToCart function'"-->
-
-
-        <!-- <span v-if ="product.availableInventory - cartItemCount < 5"> Only {{ product.availableInventory - cartItemCount }}left!!</span> -->
-        <!-- <span v-if = "itemsLeft.spaces - spaces < 5"> Only {{ itemsLeft.spaces - spaces }} left!</span> -->
-        <!-- <span v-if='itemsLeft === 0'>All out!</span>
-        <span v-else-if="itemsLeft < 5"> Only {{ itemsLeft }} left!</span> -->
-        <!-- <span v-else-if= "itemsLeft >= 5"> Items available!</span> -->
-        <!--line 184 and 183 need to do v-else or change line 184 to v-else-->
-        <!-- <h2 v-if="subjects.subject">{{ subjects.subject }}</h2>
-        <span v-if='subjects.spaces === cartItemCount(subjects.id)'> All finished!</span>
-        <span v-else="subjects.spaces - cartItemCount(subjects.id) < 5">
-            Only {{ subjects.availableInventory - cartItemCount(subjects.id) }} left! -->
-            <!--Look through loop powerpoint-->
-        <!-- </span> -->
-        <!-- <span v-else>Buy now!</span> -->
-        <!--Need to change product-->
-    <!-- </div> -->
-
 </template>
 <!-- Used for html-->
 
-<style scoped>
-</style> <!-- Used for css need to do this-->
+<style scoped></style> <!-- Used for css need to do this-->
