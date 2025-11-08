@@ -5,15 +5,15 @@ import { ref } from 'vue'
 const subjects = ref([
     //The lessons from the code below has to be in the file Lessons.vue
     { id: 1, subject: 'Math', location: 'London', Price: 20, spaces: 10, image: 'Math image.jpg', rating: 5, availableInventory: 5 }, //Might need to include rating as well
-    { id: 2, subject: 'Science', location: 'London', Price: 5, spaces: 10, image: 'Science image.jpg', rating: 2, availableInventory: 5 },
-    { id: 3, subject: 'English', location: 'London', Price: 10, spaces: 5, image: 'English image.jpg', rating: 3, availableInventory: 5 },
-    { id: 4, subject: 'German', location: 'London', Price: 5, spaces: 5, image: 'German image.jpg', rating: 1, availableInventory: 5 },
-    { id: 5, subject: 'French', location: 'London', Price: 7, spaces: 5, image: 'French image.jpeg', rating: 3, availableInventory: 5 },
-    { id: 6, subject: 'Spanish', location: 'London', Price: 7, spaces: 5, image: 'Spanish image.png', rating: 3, availableInventory: 5 },
-    { id: 7, subject: 'Criminology', location: 'London', Price: 7, spaces: 5, image: 'Criminology image.jpeg', rating: 2, availableInventory: 5 },
+    { id: 2, subject: 'Science', location: 'Oxford', Price: 5, spaces: 10, image: 'Science image.jpg', rating: 2, availableInventory: 5 },
+    { id: 3, subject: 'English', location: 'Cambridge', Price: 10, spaces: 5, image: 'English image.jpg', rating: 3, availableInventory: 5 },
+    { id: 4, subject: 'German', location: 'Canterbury', Price: 5, spaces: 5, image: 'German image.jpg', rating: 1, availableInventory: 5 },
+    { id: 5, subject: 'French', location: 'Brighton', Price: 7, spaces: 5, image: 'French image.jpeg', rating: 3, availableInventory: 5 },
+    { id: 6, subject: 'Spanish', location: 'Bath', Price: 7, spaces: 5, image: 'Spanish image.png', rating: 3, availableInventory: 5 },
+    { id: 7, subject: 'Criminology', location: 'Windsor', Price: 7, spaces: 5, image: 'Criminology image.jpeg', rating: 2, availableInventory: 5 },
     { id: 8, subject: 'Computer Science', location: 'London', Price: 15, spaces: 5, image: 'Computer Science image.jpeg', rating: 5, availableInventory: 5 },
-    { id: 9, subject: 'Business', location: 'London', Price: 10, spaces: 5, image: 'Business image.jpeg', rating: 4, availableInventory: 5 },
-    { id: 10, subject: 'Economic', location: 'London', Price: 10, spaces: 5, image: 'Economic image.jpeg', rating: 4, availableInventory: 5 }
+    { id: 9, subject: 'Business', location: 'Reading', Price: 10, spaces: 5, image: 'Business image.jpeg', rating: 4, availableInventory: 5 },
+    { id: 10, subject: 'Economic', location: 'Luton', Price: 10, spaces: 5, image: 'Economic image.jpeg', rating: 4, availableInventory: 5 }
     //Involve key for v-for.
 ])
 const cart = ref([])
@@ -64,33 +64,101 @@ const stateOptions = ref({
     W: 'West',
     WC: 'West Central',
 })
-
-// function sortSubject() {
-
+// For removing lessons from the cart and adding back to the lessons page need to be done and might have to return -1 and 1 like done below.
+function sortSubject() {
+    subjects.value.sort((a, b) => {
+        if (a.subject < b.subject) return -1;
+        if (a.subject > b.subject) return 1;
+        return 0;
+    });
+}
+//Do descending and ascending order for location as well.
+// Need to sort the ascending and descending code as it has to be subject, location, price, spaces available, rating and available inventory.
+function sortLocation() {
+    subjects.value.sort((a, b) => {
+        if (a.location < b.location) return -1;
+        if (a.location > b.location) return 1;
+        return 0;
+    });
+}
+function sortPrice(){
+    subjects.value.sort((a,b) => {
+        if(a.Price < b.Price) return -1;
+        if(b.Price > a.Price) return 1;
+        return 0; 
+    });
+}
+function sortAvailability(){
+    subjects.value.sort((a,b) => {
+        if(a.availableInventory < b.availableInventory) return -1;
+        if(b.availableInventory > a.availableInventory) return 1;
+        return 0; 
+    });
+}
+// function sortPriceAscendingOrder() {
+//     subjects.value.sort((a, b) => {
+//         if (a.Price < b.Price) return -1;
+//         if (a.Price > b.Price) return 1;
+//         return 0;
+//     });
 // }
-// function sortLocation() {
-
+// function sortPriceDescendingOrder() {
+//     subjects.value.sort((a, b) => {
+//         if (a.Price > b.Price) return -1;
+//         if (a.Price < b.Price) return 1;
+//         return 0;
+//     });
 // }
-// function sortPrice() {
-
+// function sortSpacesAscendingOrder() {
+//     subjects.value.sort((a, b) => {
+//         if (a.spaces < b.spaces) return -1;
+//         if (a.spaces > b.spaces) return 1;
+//         return 0;
+//     });
 // }
-// function sortSpacesAvailable() {
+// function sortSpacesDescendingOrder() {
+//     subjects.value.sort((a, b) => {
+//         if (a.spaces > b.spaces) return -1;
+//         if (a.spaces < b.spaces) return 1;
+//         return 0;
+//     });
+// }
+// function ratingAscendingOrder() {
+//     subjects.value.sort((a, b) => {
+//         if (a.rating < b.rating) return -1;
+//         if (a.rating > b.rating) return 1;
+//         return 0;
+//     });
+// }
+// function ratingDescendingOrder() {
+//     subjects.value.sort((a, b) => {
+//         if (a.rating > b.rating) return -1;
+//         if (a.rating < b.rating) return 1;
+//         return 0;
+//     });
+// }
 
+
+// function availableInventoryAscendingOrder() {
+//     subjects.value.sort((a, b) => {
+//         if (a.availableInventory < b.availableInventory) return -1;
+//         if (a.availableInventory > b.availableInventory) return 1;
+//         return 0;
+//     });
+// }
+// function availableInventoryDescendingOrder() {
+//     subjects.value.sort((a, b) => {
+//         if (a.availableInventory > b.availableInventory) return -1;
+//         if (a.availableInventory < b.availableInventory) return 1;
+//         return 0;
+//     });
 // }
 // function ascendingOrder() {
-
+//     subjects.value.sort((a, b) => a - b);
 // }
 // function descendingOrder() {
-
+//     subjects.value.sort((a, b) => b - a);
 // }
-
-function isOrderValid() {
-    return order.value.firstName &&
-        order.value.lastName &&
-        order.value.phone
-}
-
-
 // import {sub} from 'vue'
 function addSubject() {
     cart.value.push(subjects.id);
@@ -125,7 +193,11 @@ function itemsLeft(subject) {
 function showCheckout() {
     showProduct.value = showProduct.value ? false : true;
 }
-
+function isOrderValid() {
+    return order.value.firstName &&
+        order.value.lastName &&
+        order.value.phone
+}
 </script>
 <!-- Javascript (vue.js)-->
 
@@ -149,21 +221,35 @@ function showCheckout() {
         <div>
             <div>
                 <!--Need to sort the lessons and need to sort the ascending and descending order and need buttons so it can be like that-->
+                <!-- // Need to sort the ascending and descending code as it has to be subject, location, price, spaces available, rating and available inventory. -->
                 <h4>Sort by</h4>
                 <!-- <li>Subject</li>  -->
                 <button @click="sortSubject">Subject</button><br>
                 <!-- <li>Location</li>  -->
+
+                 <!--Need to change the locations in mongoDB and on here-->
                 <button @click="sortLocation">Location</button><br>
                 <!-- <li>Price</li>  -->
-                <button @click="sortPrice">Price</button><br>
+                 <button @click ="sortPrice">Price</button><br>
+                 <button @click ="sortAvailability">Availability</button><br>
+                 <h4>Sorting in ascending or descending order</h4>
+                 <!-- // Need to sort the ascending and descending code as it has to be subject, location, price, spaces available, rating and available inventory. -->
+                <!-- <button @click="sortPriceAscendingOrder">Price Ascending Order</button><br>
+                <button @click="sortPriceDescendingOrder">Price Descending Order</button><br> -->
                 <!-- <li>Spaces available</li>  -->
-                <button @click="sortSpacesAvailable">Spaces Available</button>
+                <!-- <button @click="sortSpacesAscendingOrder">Spaces Ascending Order</button>
                 <br>
-                <h4>Order</h4>
+                <button @click="sortSpacesDescendingOrder">Spaces Descending Order</button><br>
+                <button @click="ratingAscendingOrder">Rating Ascending Order</button><br>
+                <button @click="ratingDescendingOrder">Rating Descending Order</button><br>
+                <button @click="availableInventoryAscendingOrder">Available Inventory Ascending Order</button><br>
+                <button @click="availableInventoryDescendingOrder">Available Inventory Descending Order</button><br> -->
+                <!-- // Need to sort the ascending and descending code as it has to be subject, location, price, spaces available, rating and available inventory. -->
+                <!-- <button @click="ascendingOrder">Ascending Order</button><br>
+                <button @click="descendingOrder">Descending Order</button><br> -->
                 <!-- <li>Ascending</li> -->
-                <button @click="ascendingOrder">Ascending</button><br>
+                <!-- <button @click="sortPriceAscendingOrder">Ascending</button><br> -->
                 <!-- <li>Descending</li> -->
-                <button @click="descendingOrder">Descending</button><br>
                 --------------------------------------------------------------------------------------------------------------------------------
             </div>
             <h3>Books available:</h3>
@@ -206,6 +292,8 @@ function showCheckout() {
     <div v-else>
         <!--Code for checkout page-->
         <h1>Checkout Page</h1>
+        <!--User need to remove lessons in the checkout page-->
+        <!--The remove lessons need to be added back to the lessons page-->
         <div v-if="cartItemCount(subjects) == 0">
             <p>Your cart is empty.</p>
         </div>

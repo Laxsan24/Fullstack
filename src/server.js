@@ -1,12 +1,34 @@
-import http from "http";
+//import http from "http" is main module.
+//import express from "express" is a 3rd party module that needs to be installed.
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain");
-  res.end("Hello World\n");
+// import http from "http";
+import express from "express";
+const app = express();
+// const http = require('http');  
+const PORT = 3000;
+
+app.get("/", (req, res) => {
+  res.send("Hello World");
 });
 
-const PORT = 3000;
-server.listen(PORT, () => {
+
+function requestHandler(req, res) {
+  console.log("incoming request: " + req.url);
+  res.end("Hello from the server!");
+}
+
+app.get("/products", function(req, res) {
+  res.send("Welcome to my book shop!");
+});
+app.use(function(req, res) {
+  res.status(404).send("Sorry, that route doesn't exist.");
+});
+
+app.get("/products/:id", function(req, res) {
+  const id = parseInt(req.params.id, 10);
+  res.send("Product ID: " + id);
+});
+
+app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
 });
