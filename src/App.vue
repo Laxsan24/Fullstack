@@ -1,6 +1,7 @@
 <script setup>
 // const ordervalue = document.getElementById('ordervalue');
 // const app = document.getElementById('app');
+// import bootstrap from "bootstrap";
 import { ref } from 'vue'
 const subjects = ref([
     //The lessons from the code below has to be in the file Lessons.vue
@@ -65,99 +66,86 @@ const stateOptions = ref({
     WC: 'West Central',
 })
 // For removing lessons from the cart and adding back to the lessons page need to be done and might have to return -1 and 1 like done below.
-function sortSubject() {
-    subjects.value.sort((a, b) => {
-        if (a.subject < b.subject) return -1;
-        if (a.subject > b.subject) return 1;
-        return 0;
-    });
-}
+
+    function sortSubject() {
+        function compare(a,b){
+            if (a.subject < b.subject) return -1;
+            if (a.subject > b.subject) return 1;
+            return 0;
+        }
+            return subjects.value.sort(compare);
+    }
+    // return subjects.value.sort()
 //Do descending and ascending order for location as well.
 // Need to sort the ascending and descending code as it has to be subject, location, price, spaces available, rating and available inventory.
 function sortLocation() {
-    subjects.value.sort((a, b) => {
-        if (a.location < b.location) return -1;
-        if (a.location > b.location) return 1;
-        return 0;
-    });
-}
+     function compare(a,b) {
+                    if (a.location < b.location) return -1;
+                    if (a.location > b.location) return 1;
+                    return 0;
+                };
+                return subjects.value.sort(compare);
+        }
+
 function sortPrice(){
-    subjects.value.sort((a,b) => {
+    function compare(a,b){
         if(a.Price < b.Price) return -1;
         if(b.Price > a.Price) return 1;
         return 0; 
-    });
+    }
+    return subjects.value.sort(compare);
 }
 function sortAvailability(){
-    subjects.value.sort((a,b) => {
+    function compare(a,b){
         if(a.availableInventory < b.availableInventory) return -1;
         if(b.availableInventory > a.availableInventory) return 1;
         return 0; 
-    });
+    }
+    return subjects.value.sort(compare);
 }
-// function sortPriceAscendingOrder() {
-//     subjects.value.sort((a, b) => {
-//         if (a.Price < b.Price) return -1;
-//         if (a.Price > b.Price) return 1;
-//         return 0;
+//Need to fix Ascending and descending order
+function ascendingOrder() {
+    function compare(a, b){
+        if (a.subject < b.subject) return -1;
+        if (a.subject > b.subject) return 1;
+        if (a.location < b.location) return -1;
+        if (a.location > b.location) return 1;
+        if(a.Price < b.Price) return -1;
+        if(b.Price > a.Price) return 1;
+        if (a.availableInventory < b.availableInventory) return -1;
+        if(b.availableInventory > a.availableInventory) return 1;
+        return 0;        
+    }
+    return subjects.value(compare);
+}
+// function ascendingOrder1() {
+//     subjects.value.sort((a,b) => {
+//         if(a < b) return -1;
+//         if(b > a) return 1;
+//         return 0; 
 //     });
 // }
-// function sortPriceDescendingOrder() {
-//     subjects.value.sort((a, b) => {
-//         if (a.Price > b.Price) return -1;
-//         if (a.Price < b.Price) return 1;
-//         return 0;
-//     });
-// }
-// function sortSpacesAscendingOrder() {
-//     subjects.value.sort((a, b) => {
-//         if (a.spaces < b.spaces) return -1;
-//         if (a.spaces > b.spaces) return 1;
-//         return 0;
-//     });
-// }
-// function sortSpacesDescendingOrder() {
-//     subjects.value.sort((a, b) => {
-//         if (a.spaces > b.spaces) return -1;
-//         if (a.spaces < b.spaces) return 1;
-//         return 0;
-//     });
-// }
-// function ratingAscendingOrder() {
-//     subjects.value.sort((a, b) => {
-//         if (a.rating < b.rating) return -1;
-//         if (a.rating > b.rating) return 1;
-//         return 0;
-//     });
-// }
-// function ratingDescendingOrder() {
-//     subjects.value.sort((a, b) => {
-//         if (a.rating > b.rating) return -1;
-//         if (a.rating < b.rating) return 1;
-//         return 0;
-//     });
-// }
+function descendingOrder() {
+    function compare(a,b){
+        if (a.subject < b.subject) return -1;
+        if (a.subject > b.subject) return 1;
+        if (a.location < b.location) return -1;
+        if (a.location > b.location) return 1;
+        if(a.Price < b.Price) return -1;
+        if(b.Price > a.Price) return 1;
+        if (a.availableInventory < b.availableInventory) return -1;
+        if(b.availableInventory > a.availableInventory) return 1;
+        return 0;
+    }
+    return subjects.value(compare);
 
-
-// function availableInventoryAscendingOrder() {
-//     subjects.value.sort((a, b) => {
-//         if (a.availableInventory < b.availableInventory) return -1;
-//         if (a.availableInventory > b.availableInventory) return 1;
-//         return 0;
+}
+// function descendingOrder1() {
+//     subjects.value.sort((a,b) => {
+//         if(a < b) return -1;
+//         if(b > a) return 1;
+//         return 0; 
 //     });
-// }
-// function availableInventoryDescendingOrder() {
-//     subjects.value.sort((a, b) => {
-//         if (a.availableInventory > b.availableInventory) return -1;
-//         if (a.availableInventory < b.availableInventory) return 1;
-//         return 0;
-//     });
-// }
-// function ascendingOrder() {
-//     subjects.value.sort((a, b) => a - b);
-// }
-// function descendingOrder() {
-//     subjects.value.sort((a, b) => b - a);
 // }
 // import {sub} from 'vue'
 function addSubject() {
@@ -180,6 +168,18 @@ function addToCart(subject) {
     }
     else {
         alert("Out of stock!");
+    }
+
+
+}
+function removeToCart(subject) {
+    //Try using try and catch
+    if (subject.availableInventory > 0) {
+        cart.value.remove(subject.id);
+        subject.availableInventory++;
+    }
+    else {
+        alert("");
     }
 
 
@@ -223,33 +223,20 @@ function isOrderValid() {
                 <!--Need to sort the lessons and need to sort the ascending and descending order and need buttons so it can be like that-->
                 <!-- // Need to sort the ascending and descending code as it has to be subject, location, price, spaces available, rating and available inventory. -->
                 <h4>Sort by</h4>
-                <!-- <li>Subject</li>  -->
+                <div v-for = "subject in sortLocation"></div>
                 <button @click="sortSubject">Subject</button><br>
-                <!-- <li>Location</li>  -->
-
-                 <!--Need to change the locations in mongoDB and on here-->
                 <button @click="sortLocation">Location</button><br>
                 <!-- <li>Price</li>  -->
                  <button @click ="sortPrice">Price</button><br>
                  <button @click ="sortAvailability">Availability</button><br>
                  <h4>Sorting in ascending or descending order</h4>
-                 <!-- // Need to sort the ascending and descending code as it has to be subject, location, price, spaces available, rating and available inventory. -->
-                <!-- <button @click="sortPriceAscendingOrder">Price Ascending Order</button><br>
-                <button @click="sortPriceDescendingOrder">Price Descending Order</button><br> -->
-                <!-- <li>Spaces available</li>  -->
-                <!-- <button @click="sortSpacesAscendingOrder">Spaces Ascending Order</button>
-                <br>
-                <button @click="sortSpacesDescendingOrder">Spaces Descending Order</button><br>
-                <button @click="ratingAscendingOrder">Rating Ascending Order</button><br>
-                <button @click="ratingDescendingOrder">Rating Descending Order</button><br>
-                <button @click="availableInventoryAscendingOrder">Available Inventory Ascending Order</button><br>
-                <button @click="availableInventoryDescendingOrder">Available Inventory Descending Order</button><br> -->
                 <!-- // Need to sort the ascending and descending code as it has to be subject, location, price, spaces available, rating and available inventory. -->
-                <!-- <button @click="ascendingOrder">Ascending Order</button><br>
-                <button @click="descendingOrder">Descending Order</button><br> -->
-                <!-- <li>Ascending</li> -->
-                <!-- <button @click="sortPriceAscendingOrder">Ascending</button><br> -->
-                <!-- <li>Descending</li> -->
+                
+                <!-- Need to fix Ascending and descending order -->
+                <button @click="ascendingOrder" type = "radio">Ascending Order</button><br>
+                <!-- <button @click="ascendingOrder1" type ="radio">Ascending Order1</button><br> -->
+                <button @click="descendingOrder" type = "radio">Descending Order</button><br>
+                <!-- <button @click="descendingOrder1" type ="radio">Descending Order1</button><br> -->
                 --------------------------------------------------------------------------------------------------------------------------------
             </div>
             <h3>Books available:</h3>
@@ -298,9 +285,43 @@ function isOrderValid() {
             <p>Your cart is empty.</p>
         </div>
         <div v-else>
+            <button @click="showProduct = true">Continue Shopping</button>
             <p>You have {{ cartItemCount(subjects) }} items in your cart.</p>
+            <!--Not for loop-->
+            <li v-for="subject in subjects" :key="subject.id">
+                    <p>Subject: {{ subject.subject }}</p>
+                    <p>Location: {{ subject.location }}</p>
+                    <p>Price: {{ subject.Price }}</p>
+                    <p>Items left: {{ subject.spaces }}</p>
+                    <p>Spaces left: {{ subject.availableInventory }}</p>
+                    
+
+                    <p>Image: {{ subject.image }}</p>
+
+                    <img :src="'images/' + subject.image" :alt="subject.subject + ' book image'" width="100"
+                        height="100">
+                    <br>
+
+                    <p>Rating: {{ subject.rating }}</p>
+                    <div>
+                        <span v-for='n in subject.rating'>★</span>
+                        <span v-for='n in 5 - subject.rating'>☆</span>
+                        <!-- <p>Remove!</p> -->
+                    </div>
+                    <div>
+                        <button v-on:click='removeToCart(subject)' v-if="subject.availableInventory"> Remove item</button>
+
+                        <div v-else>
+                            <!-- <button disabled='disabled'>Add to cart</button>
+                            <p>You have used all your items in the cart</p> -->
+                        </div>
+                        
+                    </div>
+                    <!--Need to make the button add to the cart and take away the amount of spaces left.-->
+                </li>
         </div>
-        <button @click="showProduct = true">Continue Shopping</button>
+        <!-- <button @click="showProduct = true">Continue Shopping</button> -->
+
         <div>
             <h2>Order Checkout:</h2>
             <h3>Please enter your details below:</h3>
@@ -366,4 +387,8 @@ function isOrderValid() {
 </template>
 <!-- Used for html-->
 
-<style scoped></style> <!-- Used for css need to do this-->
+<style scoped>
+h1{
+    color: aliceblue;
+}
+</style> <!-- Used for css need to do this-->
