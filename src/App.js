@@ -65,6 +65,23 @@ export default {
       subjects.value.sort((a, b) => a.availableInventory - b.availableInventory);
     }
 
+    function ascendingOrder(){
+          function compare(a, b) {
+            if (a.subject > b.subject) return 1;
+            if (b.subject > a.subject) return -1;
+            if (a.Price > b.Price) return 1;
+            if (b.Price > a.Price) return -1;
+            return 0;
+          }
+          return subjects.value.sort(compare);
+    }
+    
+
+    function descendingOrder(){
+        subjects.value.sort((a,b)=> b.subjects.compare(a.subjects))
+    }
+
+
     function addToCart(subject) {
       if (subject.availableInventory > 0) {
         cart.value.push(subject.id);
@@ -102,6 +119,17 @@ export default {
       showProduct.value = true;
     }
 
+    // console.log(cart.value)
+        // for(let i = 0; i < cart.value.length; i++) {
+        //   console.log(cart.value[i])
+        //   // for(let a of subjects) {
+        //   //   if(a.id === item.id) {
+        //   //     console.log(item.subject)
+        //   //   }
+        //   // }
+        // }
+
+ 
     return {
       subjects,
       cart,
@@ -118,7 +146,9 @@ export default {
       order,
       stateOptions,
       isOrderValid,
-      placeOrder
+      placeOrder,
+      ascendingOrder,
+      descendingOrder
     };
   },
 
@@ -140,6 +170,9 @@ export default {
         <button @click="sortPrice">Price</button><br>
         <button @click="sortAvailability">Availability</button><br>
 
+        <button @click="ascendingOrder">Ascending order</button><br>
+        <button @click="descendingOrder">Descending order</button><br>
+
         <h3>Books available:</h3>
         <ol>
           <li v-for="subject in subjects" :key="subject.id">
@@ -153,6 +186,7 @@ export default {
             <p>Rating:</p>
             <span v-for="n in subject.rating">★</span>
             <span v-for="n in 5 - subject.rating">☆</span>
+            <br>
 
             <button @click="addToCart(subject)" :disabled="subject.availableInventory == 0">
               Add to cart
@@ -165,9 +199,43 @@ export default {
         <h1>Checkout Page</h1>
 
         <button @click="showProduct = true">Continue Shopping</button>
-
+        
         <p>You have {{ cartItemCount() }} items in your cart.</p>
 
+        <h3>Your Cart:</h3>
+
+        <ol>
+          <li 
+            v-for="id in cart" 
+            :key="id"
+          >
+          
+            <p>
+              Subject: 
+              {{ subjects.find(s => s.id === id).subject }}
+            </p>
+            <p>
+              Location: 
+              {{ subjects.find(function(s) { return s.id === id}).location }}
+            </p>
+            <p>
+              Price: 
+              £{{ subjects.find(s => s.id === id).Price }}
+            </p>
+            <p>
+              Items left: 
+              {{ itemsLeft(subjects.find(s => s.id === id)) }}
+            </p>
+
+            <img :src="'images/' + subjects.find(s => s.id === id).image" width="100" height="100" />
+
+            <button 
+              @click="removeToCart(subjects.find(s => s.id === id))"
+            >
+              Remove from cart
+            </button>
+          </li>
+        </ol>
         <div>
           <h3>Order Checkout:</h3>
 
