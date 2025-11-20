@@ -18,6 +18,8 @@ export default {
 
     const cart = ref([]);
 
+    let sortBy = ref("");
+
     const showProduct = ref(true);
 
     const order = ref({
@@ -50,36 +52,65 @@ export default {
     // ---- Functions ----
 
     function sortSubject() {
-      subjects.value.sort((a, b) => a.subject.localeCompare(b.subject));
+      sortBy.value = "subject";
     }
 
     function sortLocation() {
-      subjects.value.sort((a, b) => a.location.localeCompare(b.location));
+      sortBy.value = "location";
     }
 
     function sortPrice() {
-      subjects.value.sort((a, b) => a.Price - b.Price);
+      sortBy.value = "price";
     }
 
     function sortAvailability() {
-      subjects.value.sort((a, b) => a.availableInventory - b.availableInventory);
+      sortBy.value = "availability";
     }
 
     function ascendingOrder(){
           function compare(a, b) {
-            if (a.subject > b.subject) return 1;
-            if (b.subject > a.subject) return -1;
-            if (a.Price > b.Price) return 1;
-            if (b.Price > a.Price) return -1;
-            return 0;
+            switch(sortBy.value) {
+              case "subject":
+                if (a.subject > b.subject) return 1;
+                if (b.subject > a.subject) return -1;
+                return 0;
+                case "location":
+                if (a.location > b.location) return 1;
+                if (b.location > a.location) return -1;
+                return 0;
+              case "price":
+                if (a.Price > b.Price) return 1;
+                if (b.Price > a.Price) return -1;
+                return 0;
+                case "availability":
+                if (a.availableInventory > b.availableInventory) return 1;
+                if (b.availableInventory > a.availableInventory) return -1;
+                return 0;
+              }
+
           }
           return subjects.value.sort(compare);
     }
     
 
-    function descendingOrder(){
-        subjects.value.sort((a,b)=> b.subjects.compare(a.subjects))
+    // function descendingOrder(){
+    //     subjects.value.sort((a,b)=> b.subjects.compare(a.subjects))
+    // }
+
+    function descendingOrder() {
+  subjects.value.sort((a, b) => {
+    switch (sortBy.value) {
+      case "subject":
+        return b.subject.localeCompare(a.subject);
+      case "location":
+        return b.location.localeCompare(a.location);
+      case "price":
+        return b.Price - a.Price;
+      case "availability":
+        return b.availableInventory - a.availableInventory;
     }
+  });
+}
 
 
     function addToCart(subject) {
