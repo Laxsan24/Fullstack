@@ -67,50 +67,45 @@ export default {
       sortBy.value = "availability";
     }
 
-    function ascendingOrder(){
-          function compare(a, b) {
-            switch(sortBy.value) {
-              case "subject":
-                if (a.subject > b.subject) return 1;
-                if (b.subject > a.subject) return -1;
-                return 0;
-                case "location":
-                if (a.location > b.location) return 1;
-                if (b.location > a.location) return -1;
-                return 0;
-              case "price":
-                if (a.Price > b.Price) return 1;
-                if (b.Price > a.Price) return -1;
-                return 0;
-                case "availability":
-                if (a.availableInventory > b.availableInventory) return 1;
-                if (b.availableInventory > a.availableInventory) return -1;
-                return 0;
-              }
-
-          }
-          return subjects.value.sort(compare);
+    function ascendingOrder() {
+      function compare(a, b) {
+        switch (sortBy.value) {
+          case "subject":
+            if (a.subject > b.subject) return 1;
+            if (b.subject > a.subject) return -1;
+            return 0;
+          case "location":
+            if (a.location > b.location) return 1;
+            if (b.location > a.location) return -1;
+            return 0;
+          case "price":
+            if (a.Price > b.Price) return 1;
+            if (b.Price > a.Price) return -1;
+            return 0;
+          case "availability":
+            if (a.availableInventory > b.availableInventory) return 1;
+            if (b.availableInventory > a.availableInventory) return -1;
+            return 0;
+        }
+      }
+      return subjects.value.sort(compare);
     }
-    
 
-    // function descendingOrder(){
-    //     subjects.value.sort((a,b)=> b.subjects.compare(a.subjects))
-    // }
 
     function descendingOrder() {
-  subjects.value.sort((a, b) => {
-    switch (sortBy.value) {
-      case "subject":
-        return b.subject.localeCompare(a.subject);
-      case "location":
-        return b.location.localeCompare(a.location);
-      case "price":
-        return b.Price - a.Price;
-      case "availability":
-        return b.availableInventory - a.availableInventory;
+      subjects.value.sort((a, b) => {
+        switch (sortBy.value) {
+          case "subject":
+            return b.subject.localeCompare(a.subject);
+          case "location":
+            return b.location.localeCompare(a.location);
+          case "price":
+            return b.Price - a.Price;
+          case "availability":
+            return b.availableInventory - a.availableInventory;
+        }
+      });
     }
-  });
-}
 
 
     function addToCart(subject) {
@@ -139,9 +134,32 @@ export default {
     function showCheckout() {
       showProduct.value = !showProduct.value;
     }
+    function isNameValid(name) {
+      let pattern = /^[A-Za-z]+$/;
+      let result = pattern.test(name);
+
+      if (result) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function isPhoneValid(phone) {
+      let phoneString = String(phone);
+
+      let pattern = /^[0-9]+$/;
+      let result = pattern.test(phoneString);
+
+      if (result) {
+        return true;
+      } else {
+        return false;
+      }
+    }
 
     function isOrderValid() {
-      return order.value.firstName && order.value.lastName && order.value.phone;
+      return (isNameValid(order.value.firstName) && isNameValid(order.value.lastName) && isPhoneValid(order.value.phone))
     }
 
     function placeOrder() {
@@ -150,17 +168,8 @@ export default {
       showProduct.value = true;
     }
 
-    // console.log(cart.value)
-        // for(let i = 0; i < cart.value.length; i++) {
-        //   console.log(cart.value[i])
-        //   // for(let a of subjects) {
-        //   //   if(a.id === item.id) {
-        //   //     console.log(item.subject)
-        //   //   }
-        //   // }
-        // }
 
- 
+
     return {
       subjects,
       cart,
@@ -214,9 +223,10 @@ export default {
 
             <img :src="'images/' + subject.image" width="100" height="100" />
 
-            <p>Rating:</p>
+            <p>Rating:
             <span v-for="n in subject.rating">★</span>
             <span v-for="n in 5 - subject.rating">☆</span>
+            </p>
             <br>
 
             <button @click="addToCart(subject)" :disabled="subject.availableInventory == 0">
@@ -271,14 +281,58 @@ export default {
           <h3>Order Checkout:</h3>
 
           <p><strong>First Name:</strong>
-            <input v-model="order.firstName" />
+            <input v-model.trim="order.firstName" type="text" placeholder="First Name"><br>
           </p>
           <p><strong>Last Name:</strong>
-            <input v-model="order.lastName" />
+            <input v-model.trim="order.lastName" type="text" placeholder="Last Name"><br>
           </p>
           <p><strong>Phone:</strong>
-            <input v-model="order.phone" />
+            <input v-model.number="order.phone" type="number" placeholder="Phone Number"><br>
           </p>
+          <p><strong>Address:</strong>
+            <input v-model.trim="order.address" placeholder="Address"><br></p>
+
+            <p><strong>City:</strong>
+              <input v-model.trim="order.city" placeholder="City"><br></p>
+
+            <p><strong>State:</strong>
+                <!-- 'class ="form-control"' is used for CSS styling -->
+                <select v-model.trim="order.state" class="form-control">
+                    <option disabled value="">Select State</option>
+                    <option v-for="(state, key) in stateOptions" v-bind:value="state">{{ state }} ({{ key }})</option>
+                </select><br>
+            </p>
+            <p><strong>Zip Code:</strong><input v-model.number="order.zip" type="number" placeholder="Zip Code"><br></p>
+            <p><input type="checkbox" id="gift" value="true" v-model.trim="order.gift">
+                <!-- v-bind:true-value = "order.sendGift"
+            v-bind:false-value = "order.dontSendGift"> -->
+                <label for="gift">Ship As Gift?</label>
+            </p>
+            <p><input type="radio" id="home" value="Home" v-model.trim="order.method">
+                <label for="home">Home</label>
+                <input type="radio" id="business" value="Business" v-model.trim="order.method">
+                <label for="business">Business</label>
+            </p>
+            <!--v-on-click or @click-->
+
+            <div>
+                <h2>Order information</h2>
+                <p><strong>First Name: </strong>{{ order.firstName }}</p>
+
+                <p><strong>Last Name:</strong>{{ order.lastName }}</p>
+
+                <p><strong>Phone:</strong>{{ order.phone }}</p>
+
+                <p><strong>Address:</strong>{{ order.address }}</p>
+
+                <p><strong>City:</strong>{{ order.city }}</p>
+
+                <p><strong>State:</strong>{{ order.state }}</p>
+
+                <p><strong>Zip Code:</strong>{{ order.zip }}</p>
+                <p><strong>Gift:</strong>{{ order.gift ? 'Yes' : 'No' }}</p>
+                <p><strong>Shipping Method:</strong>{{ order.method }}</p>
+                <!--v-on-click or @click-->
 
           <button @click="placeOrder" :disabled="!isOrderValid()">Confirm Order</button>
         </div>
