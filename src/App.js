@@ -3,17 +3,8 @@ import { ref } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 export default {
   setup() {
     // --- all your existing refs ---
+
     const subjects = ref([
-      { id: 1, subject: 'Math', location: 'London', Price: 20, spaces: 10, image: 'Math image.jpg', rating: 5, availableInventory: 5 },
-      { id: 2, subject: 'Science', location: 'Oxford', Price: 5, spaces: 10, image: 'Science image.jpg', rating: 2, availableInventory: 5 },
-      { id: 3, subject: 'English', location: 'Cambridge', Price: 10, spaces: 5, image: 'English image.jpg', rating: 3, availableInventory: 5 },
-      { id: 4, subject: 'German', location: 'Canterbury', Price: 5, spaces: 5, image: 'German image.jpg', rating: 1, availableInventory: 5 },
-      { id: 5, subject: 'French', location: 'Brighton', Price: 7, spaces: 5, image: 'French image.jpeg', rating: 3, availableInventory: 5 },
-      { id: 6, subject: 'Spanish', location: 'Bath', Price: 7, spaces: 5, image: 'Spanish image.png', rating: 3, availableInventory: 5 },
-      { id: 7, subject: 'Criminology', location: 'Windsor', Price: 7, spaces: 5, image: 'Criminology image.jpeg', rating: 2, availableInventory: 5 },
-      { id: 8, subject: 'Computer Science', location: 'London', Price: 15, spaces: 5, image: 'Computer Science image.jpeg', rating: 5, availableInventory: 5 },
-      { id: 9, subject: 'Business', location: 'Reading', Price: 10, spaces: 5, image: 'Business image.jpeg', rating: 4, availableInventory: 5 },
-      { id: 10, subject: 'Economic', location: 'Luton', Price: 10, spaces: 5, image: 'Economic image.jpeg', rating: 4, availableInventory: 5 }
     ]);
 
     const cart = ref([]);
@@ -163,10 +154,45 @@ export default {
     }
 
     function placeOrder() {
-      alert(`Thank you for your order, ${order.value.firstName}!`);
-      cart.value = [];
-      showProduct.value = true;
+      const data = {
+        ...cart.value,
+        ...order.value
+      };
+      fetch('http://localhost:3000/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(json => {
+          alert(`Thank you for your order, ${order.value.firstName} ${order.value.lastName}!`);
+          cart.value = [];
+          showProduct.value = true;
+          // fetchLessons();
+        })
     }
+    async function fetchLessons() {
+      try {
+        const response = await fetch('http://localhost:3000/lessons');
+        if (!response.ok) 
+          // throw new Error(`Fail to fetch lessons: ${response.statusText}`);
+          throw new Error("Response not ok");
+        
+        const data = await response.json();
+        subjects.value = data.map(lesson =>({
+          ...lesson,
+          id: lesson._id.toString(),
+        }));
+        // console.log("Fetched:", subjects.value);
+        // console.log(subjects.value, subjects.value);
+      }
+      catch (error) {
+        console.error("Fetch error:", error);
+      }
+    }
+    // fetchLessons();
 
 
 
@@ -174,6 +200,7 @@ export default {
       subjects,
       cart,
       showProduct,
+      sortBy,
       sortSubject,
       sortLocation,
       sortPrice,
@@ -209,7 +236,8 @@ export default {
         <button @click="sortLocation">Location</button><br>
         <button @click="sortPrice">Price</button><br>
         <button @click="sortAvailability">Availability</button><br>
-
+        
+        <h4>Order</h4>
         <button @click="ascendingOrder">Ascending order</button><br>
         <button @click="descendingOrder">Descending order</button><br>
 
@@ -221,7 +249,7 @@ export default {
             <p>Price: £{{ subject.Price }}</p>
             <p>Items left: {{ itemsLeft(subject) }}</p>
 
-            <img :src="'images/' + subject.image" width="100" height="100" />
+            <img v-bind:src="'images/' + subject.image" width="100" height="100" />
 
             <p>Rating:
             <span v-for="n in subject.rating">★</span>
@@ -232,6 +260,8 @@ export default {
             <button @click="addToCart(subject)" :disabled="subject.availableInventory == 0">
               Add to cart
             </button>
+            <p v-if="subject.availableInventory ==0" style="color:red;"> Out of stock</p>
+            
           </li>
         </ol>
       </div>
@@ -268,8 +298,9 @@ export default {
               {{ itemsLeft(subjects.find(s => s.id === id)) }}
             </p>
 
-            <img :src="'images/' + subjects.find(s => s.id === id).image" width="100" height="100" />
+            <img v-bind:src="'images/' + subjects.find(s => s.id === id).image" width="100" height="100" />
 
+            <br>
             <button 
               @click="removeToCart(subjects.find(s => s.id === id))"
             >
