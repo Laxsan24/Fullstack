@@ -2,9 +2,9 @@ import { ref } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 
 export default {
   setup() {
-    // --- all your existing refs ---
 
     const subjects = ref([
+
     ]);
 
     const cart = ref([]);
@@ -85,16 +85,16 @@ export default {
 
     function descendingOrder() {
       subjects.value.sort((a, b) => {
-        switch (sortBy.value) {
-          case "subject":
-            return b.subject.localeCompare(a.subject);
-          case "location":
-            return b.location.localeCompare(a.location);
-          case "price":
-            return b.Price - a.Price;
-          case "availability":
-            return b.availableInventory - a.availableInventory;
-        }
+    switch (sortBy.value) {
+      case "subject":
+        return (b.subject ?? "").localeCompare(a.subject ?? "");
+      case "location":
+        return (b.location ?? "").localeCompare(a.location ?? "");
+      case "price":
+        return (b.Price ?? 0) - (a.Price ?? 0);
+      case "availability":
+        return (b.availableInventory ?? 0) - (a.availableInventory ?? 0);
+    }
       });
     }
 
@@ -176,23 +176,28 @@ export default {
     async function fetchLessons() {
       try {
         const response = await fetch('http://localhost:3000/lessons');
-        if (!response.ok) 
-          // throw new Error(`Fail to fetch lessons: ${response.statusText}`);
+        if (!response.ok) {
+          
+           console.log(`Fail to fetch lessons: ${response.statusText}`);
           throw new Error("Response not ok");
-        
+         
+        }
         const data = await response.json();
         subjects.value = data.map(lesson =>({
-          ...lesson,
-          id: lesson._id.toString(),
+          id: lesson._id?.toString(),
+          subject: lesson.Subject ?? "",
+          location: lesson.Location ?? "",
+          Price: lesson.Price ?? 0,
+          image: `/images/${lesson.images ?? ""}`,
+          rating: lesson.Rating ?? 0,
+          availableInventory: lesson.availableInventory ?? 0
         }));
-        // console.log("Fetched:", subjects.value);
-        // console.log(subjects.value, subjects.value);
       }
       catch (error) {
         console.error("Fetch error:", error);
       }
     }
-    // fetchLessons();
+    fetchLessons();
 
 
 
@@ -249,11 +254,12 @@ export default {
             <p>Price: £{{ subject.Price }}</p>
             <p>Items left: {{ itemsLeft(subject) }}</p>
 
-            <img v-bind:src="'images/' + subject.image" width="100" height="100" />
+            <img :src="subject.image" width="100" height="100" />
 
             <p>Rating:
             <span v-for="n in subject.rating">★</span>
-            <span v-for="n in 5 - subject.rating">☆</span>
+            <span v-for="n in Math.max(0, 5 - (subject.rating || 0))">☆</span>
+
             </p>
             <br>
 
@@ -298,7 +304,7 @@ export default {
               {{ itemsLeft(subjects.find(s => s.id === id)) }}
             </p>
 
-            <img v-bind:src="'images/' + subjects.find(s => s.id === id).image" width="100" height="100" />
+            <img :src="subjects.find(s => s.id === id).image" width="100" height="100" />
 
             <br>
             <button 
