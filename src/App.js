@@ -82,22 +82,29 @@ export default {
       return subjects.value.sort(compare);
     }
 
-
     function descendingOrder() {
-      subjects.value.sort((a, b) => {
-    switch (sortBy.value) {
-      case "subject":
-        return (b.subject ?? "").localeCompare(a.subject ?? "");
-      case "location":
-        return (b.location ?? "").localeCompare(a.location ?? "");
-      case "price":
-        return (b.Price ?? 0) - (a.Price ?? 0);
-      case "availability":
-        return (b.availableInventory ?? 0) - (a.availableInventory ?? 0);
+      function compare(a, b) {
+        switch (sortBy.value) {
+          case "subject":
+            if (a.subject < b.subject) return 1;
+            if (b.subject < a.subject) return -1;
+            return 0;
+          case "location":
+            if (a.location < b.location) return 1;
+            if (b.location < a.location) return -1;
+            return 0;
+          case "price":
+            if (a.Price < b.Price) return 1;
+            if (b.Price < a.Price) return -1;
+            return 0;
+          case "availability":
+            if (a.availableInventory < b.availableInventory) return 1;
+            if (b.availableInventory < a.availableInventory) return -1;
+            return 0;
+        }
+      }
+      return subjects.value.sort(compare);
     }
-      });
-    }
-
 
     function addToCart(subject) {
       if (subject.availableInventory > 0) {
@@ -177,20 +184,20 @@ export default {
       try {
         const response = await fetch('http://localhost:3000/lessons');
         if (!response.ok) {
-          
-           console.log(`Fail to fetch lessons: ${response.statusText}`);
+
+          console.log(`Fail to fetch lessons: ${response.statusText}`);
           throw new Error("Response not ok");
-         
+
         }
         const data = await response.json();
-        subjects.value = data.map(lesson =>({
+        subjects.value = data.map(lesson => ({
           id: lesson._id?.toString(),
-          subject: lesson.Subject ?? "",
-          location: lesson.Location ?? "",
-          Price: lesson.Price ?? 0,
-          image: `/images/${lesson.images ?? ""}`,
-          rating: lesson.Rating ?? 0,
-          availableInventory: lesson.availableInventory ?? 0
+          subject: lesson.Subject,
+          location: lesson.Location,
+          Price: lesson.Price,
+          image: `http://localhost:3000${lesson.images}`,
+          rating: lesson.Rating,
+          availableInventory: lesson.availableInventory
         }));
       }
       catch (error) {
@@ -286,32 +293,22 @@ export default {
             v-for="id in cart" 
             :key="id"
           >
-          
-            <p>
-              Subject: 
-              {{ subjects.find(s => s.id === id).subject }}
-            </p>
-            <p>
-              Location: 
-              {{ subjects.find(function(s) { return s.id === id}).location }}
-            </p>
-            <p>
-              Price: 
-              £{{ subjects.find(s => s.id === id).Price }}
-            </p>
-            <p>
-              Items left: 
-              {{ itemsLeft(subjects.find(s => s.id === id)) }}
-            </p>
+    <div v-if="subject = subjects.find(s => s.id === id)">
 
-            <img :src="subjects.find(s => s.id === id).image" width="100" height="100" />
+      <p>Subject: {{ subject.subject }}</p>
+      <p>Location: {{ subject.location }}</p>
+      <p>Price: £{{ subject.Price }}</p>
+      <p>Items left: {{ itemsLeft(subject) }}</p>
 
-            <br>
-            <button 
-              @click="removeToCart(subjects.find(s => s.id === id))"
-            >
-              Remove from cart
-            </button>
+      <img :src="subject.image" width="100" height="100" />
+
+      <br>
+
+      <button @click="removeToCart(subject)">
+        Remove from cart
+      </button>
+
+    </div>
           </li>
         </ol>
         <div>
