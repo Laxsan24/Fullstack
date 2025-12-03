@@ -160,26 +160,43 @@ export default {
       return (isNameValid(order.value.firstName) && isNameValid(order.value.lastName) && isPhoneValid(order.value.phone))
     }
 
-    function placeOrder() {
-      const data = {
-        ...cart.value,
-        ...order.value
-      };
-      fetch('http://localhost:3000/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-        .then(response => response.json())
-        .then(json => {
-          alert(`Thank you for your order, ${order.value.firstName} ${order.value.lastName}!`);
-          cart.value = [];
-          showProduct.value = true;
-          // fetchLessons();
-        })
+    async function placeOrder() {
+  const data = {
+    cart: cart.value,
+    order: order.value
+  };
+
+  try {
+    // POST order
+    const response = await fetch('https://backend-hhxg.onrender.com/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    await response.json();
+
+    // For each lesson in the cart – update availableInventory on backend
+    for (let id of cart.value) {
+      const lesson = subjects.value.find(s => s.id === id);
+      if (lesson) {
+        await updateLessonInventory(lesson.id, lesson.availableInventory);
+      }
     }
+
+    alert(`Thank you for your order, ${order.value.firstName} ${order.value.lastName}!`);
+
+    cart.value = [];
+    showProduct.value = true;
+
+    // Refresh updated inventory
+    fetchLessons();
+
+  } catch (error) {
+    console.error("Order error:", error);
+  }
+}
+
     async function fetchLessons() {
       try {
         const response = await fetch('https://backend-hhxg.onrender.com/lessons');
@@ -205,6 +222,17 @@ export default {
       }
     }
     fetchLessons();
+    async function updateLessonInventory(id, newInventory) {
+  try {
+    await fetch(`https://backend-hhxg.onrender.com/lessons/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ availableInventory: newInventory })
+    });
+  } catch (error) {
+    console.error("Failed to update lesson inventory:", error);
+  }
+}
 
 
 
