@@ -182,7 +182,7 @@ export default {
     }
     async function fetchLessons() {
       try {
-        const response = await fetch('http://localhost:3000/lessons');
+        const response = await fetch('https://backend-hhxg.onrender.com/lessons');
         if (!response.ok) {
 
           console.log(`Fail to fetch lessons: ${response.statusText}`);
@@ -195,7 +195,7 @@ export default {
           subject: lesson.Subject,
           location: lesson.Location,
           Price: lesson.Price,
-          image: `http://localhost:3000${lesson.images}`,
+          image: `https://backend-hhxg.onrender.com${lesson.images}`,
           rating: lesson.Rating,
           availableInventory: lesson.availableInventory
         }));
