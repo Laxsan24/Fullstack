@@ -161,41 +161,41 @@ export default {
     }
 
     async function placeOrder() {
-  const data = {
-    cart: cart.value,
-    order: order.value
-  };
+      const data = {
+        cart: cart.value,
+        order: order.value
+      };
 
-  try {
-    // POST order
-    const response = await fetch('https://backend-hhxg.onrender.com/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
+      try {
+        // POST order
+        const response = await fetch('https://backend-hhxg.onrender.com/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
 
-    await response.json();
+        await response.json();
 
-    // For each lesson in the cart – update availableInventory on backend
-    for (let id of cart.value) {
-      const lesson = subjects.value.find(s => s.id === id);
-      if (lesson) {
-        await updateLessonInventory(lesson.id, lesson.availableInventory);
+        // For each lesson in the cart – update availableInventory on backend
+        for (let id of cart.value) {
+          const lesson = subjects.value.find(s => s.id === id);
+          if (lesson) {
+            await updateLessonInventory(lesson.id, lesson.availableInventory);
+          }
+        }
+
+        alert(`Thank you for your order, ${order.value.firstName} ${order.value.lastName}!`);
+
+        cart.value = [];
+        showProduct.value = true;
+
+        // Refresh updated inventory
+        fetchLessons();
+
+      } catch (error) {
+        console.error("Order error:", error);
       }
     }
-
-    alert(`Thank you for your order, ${order.value.firstName} ${order.value.lastName}!`);
-
-    cart.value = [];
-    showProduct.value = true;
-
-    // Refresh updated inventory
-    fetchLessons();
-
-  } catch (error) {
-    console.error("Order error:", error);
-  }
-}
 
     async function fetchLessons() {
       try {
@@ -223,16 +223,16 @@ export default {
     }
     fetchLessons();
     async function updateLessonInventory(id, newInventory) {
-  try {
-    await fetch(`https://backend-hhxg.onrender.com/lessons/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ availableInventory: newInventory })
-    });
-  } catch (error) {
-    console.error("Failed to update lesson inventory:", error);
-  }
-}
+      try {
+        await fetch(`https://backend-hhxg.onrender.com/lessons/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ availableInventory: newInventory })
+        });
+      } catch (error) {
+        console.error("Failed to update lesson inventory:", error);
+      }
+    }
 
 
 
@@ -255,7 +255,9 @@ export default {
       isOrderValid,
       placeOrder,
       ascendingOrder,
-      descendingOrder
+      descendingOrder,
+      updateLessonInventory
+
     };
   },
 
@@ -276,6 +278,7 @@ export default {
         <button @click="sortLocation">Location</button><br>
         <button @click="sortPrice">Price</button><br>
         <button @click="sortAvailability">Availability</button><br>
+
         
         <h4>Order</h4>
         <button @click="ascendingOrder">Ascending order</button><br>
@@ -307,14 +310,14 @@ export default {
         </ol>
       </div>
 
-      <div v-else>
+      <div v-else class="cart-info">
         <h1>Checkout Page</h1>
 
         <button @click="showProduct = true">Continue Shopping</button>
         
-        <p>You have {{ cartItemCount() }} items in your cart.</p>
+        <h3><p>You have {{ cartItemCount() }} items in your cart.</p></h3>
 
-        <h3>Your Cart:</h3>
+        <div class="cart-info"><h3>Your Cart:</h3>
 
         <ol>
           <li 
@@ -335,12 +338,13 @@ export default {
       <button @click="removeToCart(subject)">
         Remove from cart
       </button>
+      </div>
 
     </div>
           </li>
         </ol>
-        <div>
-          <h3>Order Checkout:</h3>
+        <div class="checkout-form">
+          <h2>Order Checkout</h2>
 
           <p><strong>First Name:</strong>
             <input v-model.trim="order.firstName" type="text" placeholder="First Name"><br>
@@ -352,13 +356,12 @@ export default {
             <input v-model.number="order.phone" type="number" placeholder="Phone Number"><br>
           </p>
           <p><strong>Address:</strong>
-            <input v-model.trim="order.address" placeholder="Address"><br></p>
+            <input v-model.trim="order.address" type="text" placeholder="Address"><br></p>
 
             <p><strong>City:</strong>
-              <input v-model.trim="order.city" placeholder="City"><br></p>
+              <input v-model.trim="order.city" type="text" placeholder="City"><br></p>
 
             <p><strong>State:</strong>
-                <!-- 'class ="form-control"' is used for CSS styling -->
                 <select v-model.trim="order.state" class="form-control">
                     <option disabled value="">Select State</option>
                     <option v-for="(state, key) in stateOptions" v-bind:value="state">{{ state }} ({{ key }})</option>
@@ -375,9 +378,8 @@ export default {
                 <input type="radio" id="business" value="Business" v-model.trim="order.method">
                 <label for="business">Business</label>
             </p>
-            <!--v-on-click or @click-->
 
-            <div>
+            <div class="checkout-form">
                 <h2>Order information</h2>
                 <p><strong>First Name: </strong>{{ order.firstName }}</p>
 
@@ -394,7 +396,6 @@ export default {
                 <p><strong>Zip Code:</strong>{{ order.zip }}</p>
                 <p><strong>Gift:</strong>{{ order.gift ? 'Yes' : 'No' }}</p>
                 <p><strong>Shipping Method:</strong>{{ order.method }}</p>
-                <!--v-on-click or @click-->
 
           <button @click="placeOrder" :disabled="!isOrderValid()">Confirm Order</button>
         </div>
