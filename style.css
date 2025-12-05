@@ -1,3 +1,4 @@
+/* General styles */
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -5,6 +6,7 @@ body {
     color: #333;
 }
 
+/* Headings */
 h1,
 h2,
 h3,
@@ -34,6 +36,26 @@ button:disabled {
 }
 
 /* Product page */
+.layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+.sidebar {
+    width: 200px;
+}
+
+.products {
+    flex: 1;
+}
+
+.products ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
 ol {
     list-style: none;
     padding: 0;
@@ -72,6 +94,7 @@ p {
     margin: 15px 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 .checkout-form h2,
 .checkout-form h3 {
     text-align: center;
@@ -94,6 +117,7 @@ p {
     margin-right: 5px;
 }
 
+/* Order summary */
 .order-summary {
     margin-top: 20px;
     border-top: 1px solid #ddd;
@@ -102,16 +126,4 @@ p {
 
 .order-summary p {
     margin: 4px 0;
-}
-
-
-@media (max-width: 768px) {
-    ol {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    li {
-        width: 90%;
-    }
 }

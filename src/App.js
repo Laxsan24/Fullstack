@@ -2,17 +2,17 @@ import { ref } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 
 export default {
   setup() {
-
+    // Subjects array to hold fetched lessons
     const subjects = ref([
 
     ]);
-
+    // Cart array to hold added subjects
     const cart = ref([]);
-
+    // Sorting criteria
     let sortBy = ref("");
-
+    // Show product or checkout page
     const showProduct = ref(true);
-
+    //Order form data
     const order = ref({
       firstName: '',
       lastName: '',
@@ -24,7 +24,7 @@ export default {
       gift: false,
       method: 'Home'
     });
-
+    // State options for dropdown
     const stateOptions = ref({
       E: 'East',
       EC: 'East Central',
@@ -40,7 +40,7 @@ export default {
       WC: 'West Central'
     });
 
-    // ---- Functions ----
+    // Sort Functions
 
     function sortSubject() {
       sortBy.value = "subject";
@@ -57,7 +57,7 @@ export default {
     function sortAvailability() {
       sortBy.value = "availability";
     }
-
+    // Ascending and Descending order functions
     function ascendingOrder() {
       function compare(a, b) {
         switch (sortBy.value) {
@@ -105,7 +105,7 @@ export default {
       }
       return subjects.value.sort(compare);
     }
-
+    // Cart Functions
     function addToCart(subject) {
       if (subject.availableInventory > 0) {
         cart.value.push(subject.id);
@@ -128,7 +128,7 @@ export default {
     function itemsLeft(subject) {
       return subject.availableInventory;
     }
-
+    // Checkout Functions
     function showCheckout() {
       showProduct.value = !showProduct.value;
     }
@@ -159,13 +159,13 @@ export default {
     function isOrderValid() {
       return (isNameValid(order.value.firstName) && isNameValid(order.value.lastName) && isPhoneValid(order.value.phone))
     }
-
+    // Place Order Function
     async function placeOrder() {
       const data = {
         cart: cart.value,
         order: order.value
       };
-
+      // Send order to backend
       try {
         // POST order
         const response = await fetch('https://backend-hhxg.onrender.com/orders', {
@@ -185,8 +185,19 @@ export default {
         }
 
         alert(`Thank you for your order, ${order.value.firstName} ${order.value.lastName}!`);
-
+        // Clear cart and order form
         cart.value = [];
+        order.value = {
+          firstName: '',
+          lastName: '',
+          phone: '',
+          address: '',
+          city: '',
+          state: '',
+          zip: '',
+          gift: false,
+          method: 'Home'
+        };
         showProduct.value = true;
 
         // Refresh updated inventory
@@ -196,7 +207,7 @@ export default {
         console.error("Order error:", error);
       }
     }
-
+    // Fetch lessons from backend
     async function fetchLessons() {
       try {
         const response = await fetch('https://backend-hhxg.onrender.com/lessons');
@@ -222,6 +233,7 @@ export default {
       }
     }
     fetchLessons();
+    // Update lesson inventory on backend
     async function updateLessonInventory(id, newInventory) {
       try {
         await fetch(`https://backend-hhxg.onrender.com/lessons/${id}`, {
@@ -235,7 +247,7 @@ export default {
     }
 
 
-
+    // Return all reactive references and functions to the template
     return {
       subjects,
       cart,
@@ -261,7 +273,7 @@ export default {
     };
   },
 
-  // --- TEMPLATE (converted from your App.vue) ---
+  // Template
   template: `
     <div>
       <button @click="showCheckout" :disabled="cartItemCount() == 0">
@@ -272,18 +284,20 @@ export default {
 
       <div v-if="showProduct">
         <h1>Product Page</h1>
-
-        <h4>Sort by</h4>
+        <div class="layout">
+      <div class="sidebar">
+        <h3>Sort by</h3>
         <button @click="sortSubject">Subject</button><br>
         <button @click="sortLocation">Location</button><br>
         <button @click="sortPrice">Price</button><br>
         <button @click="sortAvailability">Availability</button><br>
 
         
-        <h4>Order</h4>
+        <h3>Order</h3>
         <button @click="ascendingOrder">Ascending order</button><br>
         <button @click="descendingOrder">Descending order</button><br>
-
+      </div>
+      <div class="products">
         <h3>Books available:</h3>
         <ol>
           <li v-for="subject in subjects" :key="subject.id">
@@ -308,6 +322,8 @@ export default {
             
           </li>
         </ol>
+      </div>
+      </div>
       </div>
 
       <div v-else class="cart-info">
@@ -347,19 +363,19 @@ export default {
           <h2>Order Checkout</h2>
 
           <p><strong>First Name:</strong>
-            <input v-model.trim="order.firstName" type="text" placeholder="First Name"><br>
+            <input v-model.trim="order.firstName" type="text" placeholder="First Name" @input="order.firstName = order.firstName.replace(/[^A-Za-z]/g, '')"><br>
           </p>
           <p><strong>Last Name:</strong>
-            <input v-model.trim="order.lastName" type="text" placeholder="Last Name"><br>
+            <input v-model.trim="order.lastName" type="text" placeholder="Last Name" @input="order.lastName = order.lastName.replace(/[^A-Za-z]/g, '')"><br>
           </p>
           <p><strong>Phone:</strong>
-            <input v-model.number="order.phone" type="number" placeholder="Phone Number"><br>
+            <input v-model.trim="order.phone" type="text" placeholder="Phone Number" @input="order.phone = order.phone.replace(/[^0-9]/g, '')"><br>
           </p>
           <p><strong>Address:</strong>
             <input v-model.trim="order.address" type="text" placeholder="Address"><br></p>
 
             <p><strong>City:</strong>
-              <input v-model.trim="order.city" type="text" placeholder="City"><br></p>
+              <input v-model.trim="order.city" type="text" placeholder="City" @input="order.city = order.city.replace(/[^A-Za-z]/g, '')"><br></p>
 
             <p><strong>State:</strong>
                 <select v-model.trim="order.state" class="form-control">
@@ -367,10 +383,8 @@ export default {
                     <option v-for="(state, key) in stateOptions" v-bind:value="state">{{ state }} ({{ key }})</option>
                 </select><br>
             </p>
-            <p><strong>Zip Code:</strong><input v-model.number="order.zip" type="number" placeholder="Zip Code"><br></p>
+            <p><strong>Zip Code:</strong><input v-model.trim="order.zip" type="text" placeholder="Zip Code" @input="order.zip = order.zip.replace(/[^0-9]/g, '')"><br></p>
             <p><input type="checkbox" id="gift" value="true" v-model.trim="order.gift">
-                <!-- v-bind:true-value = "order.sendGift"
-            v-bind:false-value = "order.dontSendGift"> -->
                 <label for="gift">Ship As Gift?</label>
             </p>
             <p><input type="radio" id="home" value="Home" v-model.trim="order.method">

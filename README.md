@@ -6,7 +6,7 @@ Github pages link = Go to settings but check if it works first
 Github pages link: https://laxsan24.github.io/Fullstack/
 
 # vue-project
-
+...
 This template should help get you started developing with Vue 3 in Vite.
 
 ## Recommended IDE Setup
